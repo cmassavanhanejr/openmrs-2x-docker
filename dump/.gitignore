@@ -1,2 +1,4 @@
 # Ignore all sql files in this directory to avoid pushing database files to the repository
 *.sql
+../mrs/*.log
+../mrs/*.log.1
