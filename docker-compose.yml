@@ -20,7 +20,7 @@ services:
       - ./dump:/docker-entrypoint-initdb.d
     restart: unless-stopped # Automatically restart unless stopped manually
     healthcheck:
-      test: "/usr/bin/mysql --user=root --password=${MYSQL_ROOT_PASSWORD} --execute \"SHOW DATABASES;\"
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "--password=eSaude123" ]
       interval: 10s
       timeout: 10s
       retries: 5
@@ -32,11 +32,11 @@ services:
       JAVA_OPTS: "-Dfile.encoding=UTF-8 -server -Djava.awt.headless=true -XX:+UseConcMarkSweepGC -Xmx8G -Xms8G -XX:MaxPermSize=8G -XX:+UseConcMarkSweepGC -Duser.timezone=Africa/Maputo"
       OPENMRS_RUNTIME_PROPERTIES_FILE: "/usr/local/tomcat/openmrs-runtime.properties"      
     ports:
-        - "8080:8080"
+      - "8080:8080" # Host port 8080 mapped to container port 8080
     networks:
-          - network
+      - network
     depends_on:
-          - "app-db"
+      - "app-db"
     volumes:
       - ./mrs/webapps/openmrs.war:/usr/local/tomcat/webapps/openmrs.war
       - ./mrs/OpenMRS:/usr/local/tomcat/.OpenMRS
