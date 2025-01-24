@@ -18,6 +18,12 @@ services:
     volumes:
       - datadb:/var/lib/mysql
       - ./dump:/docker-entrypoint-initdb.d
+    restart: unless-stopped # Automatically restart unless stopped manually
+    healthcheck:
+      test: "/usr/bin/mysql --user=root --password=${MYSQL_ROOT_PASSWORD} --execute \"SHOW DATABASES;\"
+      interval: 10s
+      timeout: 10s
+      retries: 5
 
   app-tomcat:         
     container_name: app-tomcat
@@ -35,8 +41,9 @@ services:
       - ./mrs/webapps/openmrs.war:/usr/local/tomcat/webapps/openmrs.war
       - ./mrs/OpenMRS:/usr/local/tomcat/.OpenMRS
       - ./mrs/openmrs-runtime.properties:/usr/local/tomcat/openmrs-runtime.properties
+    restart: unless-stopped # Automatically restart unless stopped manually
     healthcheck:
-      test: "/usr/bin/mysql --user=root --password=root --execute \"SHOW DATABASES;\""
+      test: "curl -f http://localhost:8080/openmrs || exit 1" # Tomcat-specific healthcheck
       interval: 2s
       timeout: 30s
       retries: 15
